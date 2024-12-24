@@ -1,11 +1,24 @@
 :root {
-    --primary-bg: #1a1a1a;
-    --secondary-bg: #2d2d2d;
-    --text-color: #e0e0e0;
-    --primary-accent: #6c5ce7;
-    --secondary-accent: #a29bfe;
-    --danger: #ff6b6b;
-    --success: #00b894;
+    /* Ana renkler */
+    --primary-bg: #171a21;          /* Steam'in koyu arka planı */
+    --secondary-bg: #1b2838;        /* Steam'in ikincil arka planı */
+    --content-bg: #2a475e;          /* İçerik alanları için */
+    
+    /* Metin renkleri */
+    --text-color: #c6d4df;          /* Ana metin rengi */
+    --text-muted: #8f98a0;          /* İkincil metin rengi */
+    --text-hover: #ffffff;          /* Hover durumunda metin */
+    
+    /* Vurgu renkleri */
+    --primary-accent: #66c0f4;      /* Steam mavi */
+    --secondary-accent: #1999ff;     /* Hover durumunda mavi */
+    --success: #a4d007;             /* Yeşil - başarı durumu */
+    --danger: #cc3d3d;              /* Kırmızı - hata/silme */
+    
+    /* Kartlar için */
+    --card-bg: #1b2838;
+    --card-border: #2a475e;
+    --card-hover: #2a475e;
 }
 
 body {
@@ -14,21 +27,56 @@ body {
 }
 
 .navbar {
-    background-color: var(--secondary-bg) !important;
-    border-bottom: 1px solid var(--primary-accent);
+    background-color: #1b2838 !important;
+    border-bottom: 1px solid #66c0f4;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.navbar-brand, .nav-link {
-    color: var(--text-color) !important;
+.navbar-brand {
+    color: #66c0f4 !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-brand:hover {
+    color: #ffffff !important;
+}
+
+.nav-link {
+    color: #c6d4df !important;
+    padding: 0.8rem 1rem !important;
+    transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: var(--secondary-accent) !important;
+    color: #66c0f4 !important;
+    background-color: rgba(102, 192, 244, 0.1);
+}
+
+.nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(102, 192, 244, 0.2);
+}
+
+/* Mobil menü için */
+.navbar-toggler {
+    border-color: #66c0f4;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(102, 192, 244, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 .card {
-    background-color: var(--secondary-bg);
-    border: 1px solid var(--primary-accent);
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    background-color: var(--card-hover);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .card-body {
@@ -36,18 +84,21 @@ body {
 }
 
 .card-footer {
-    background-color: var(--secondary-bg);
-    border-top: 1px solid var(--primary-accent);
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--card-border);
 }
 
+/* Butonlar */
 .btn-primary {
     background-color: var(--primary-accent) !important;
     border-color: var(--primary-accent) !important;
+    color: #202020 !important;
 }
 
 .btn-primary:hover {
     background-color: var(--secondary-accent) !important;
     border-color: var(--secondary-accent) !important;
+    color: #ffffff !important;
 }
 
 .btn-danger {
@@ -55,32 +106,301 @@ body {
     border-color: var(--danger) !important;
 }
 
+/* Fiyat etiketi */
+.price-tag {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: var(--success);
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+/* Form elemanları */
+.form-control, .form-select {
+    background-color: var(--content-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-color) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--content-bg) !important;
+    border-color: var(--primary-accent) !important;
+    color: var(--text-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(102, 192, 244, 0.25) !important;
+}
+
+/* Uyarılar */
 .alert-danger {
     background-color: var(--danger);
-    color: var(--text-color);
+    color: var(--text-hover);
     border: none;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    transition: transform 0.3s ease;
-    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+.alert-success {
+    background-color: var(--success);
+    color: var(--text-hover);
+    border: none;
 }
 
+/* Oyun kartları için özel stiller */
 .card-img-top {
     height: 200px;
     object-fit: cover;
-    border-bottom: 1px solid var(--primary-accent);
+    border-bottom: 1px solid var(--card-border);
+}
+
+.game-title {
+    color: var(--primary-accent);
+    font-weight: bold;
+}
+
+/* Tablo stilleri */
+.table {
+    color: var(--text-color) !important;
+}
+
+.table td, .table th {
+    border-color: var(--card-border) !important;
+}
+
+/* Placeholder rengi */
+::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 1;
+}
+
+/* Scrollbar özelleştirmesi */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--content-bg);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--card-border);
+}
+
+/* Ana arka plan */
+html, body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, var(--primary-bg), var(--secondary-bg)) !important;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Footer Stilleri */
+.footer {
+    margin-top: auto;
+    padding: 2rem 0;
+    background-color: #343a40;
+    color: #fff;
+}
+
+.footer h5 {
+    color: #fff;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.footer p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.footer .social-links a {
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.footer .social-links a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+}
+
+.footer hr {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Sayfa yapısını düzenle */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex: 1;
+}
+
+/* Yorum sistemi stilleri */
+.comment {
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.rating .fa-star {
+    color: var(--primary-accent);
+}
+
+.comment:hover {
+    background-color: var(--card-hover);
+}
+
+/* Form elemanları için Steam teması */
+.form-control, .form-select {
+    background-color: var(--content-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-color);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--content-bg);
+    border-color: var(--primary-accent);
+    color: var(--text-color);
+    box-shadow: 0 0 0 0.25rem rgba(102, 192, 244, 0.25);
+}
+
+/* Login ve Register sayfaları için */
+.bg-light {
+    background-color: var(--primary-bg) !important;
 }
 
 .card {
-    overflow: hidden;
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
 }
 
-.card img {
-    transition: transform 0.3s ease;
+.card-header {
+    background-color: var(--content-bg) !important;
+    border-bottom: 1px solid var(--card-border) !important;
+    color: var(--text-color) !important;
 }
 
-.card:hover img {
-    transform: scale(1.05);
+.card-body {
+    color: var(--text-color) !important;
+}
+
+.form-label {
+    color: var(--text-color) !important;
+}
+
+.form-control {
+    background-color: var(--content-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    color: var(--text-color) !important;
+}
+
+.form-control:focus {
+    background-color: var(--content-bg) !important;
+    border-color: var(--primary-accent) !important;
+    color: var(--text-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(102, 192, 244, 0.25) !important;
+}
+
+/* Profil sayfası için */
+.profile-info h2, 
+.profile-info p {
+    color: var(--text-color) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.list-group-item {
+    background-color: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-color) !important;
+}
+
+.list-group-item:hover {
+    background-color: var(--card-hover) !important;
+}
+
+/* Tablolar için */
+.table {
+    color: var(--text-color) !important;
+}
+
+.table td, 
+.table th {
+    border-color: var(--card-border) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Alert mesajları için */
+.alert-success {
+    background-color: rgba(164, 208, 7, 0.2) !important;
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+}
+
+.alert-danger {
+    background-color: rgba(204, 61, 61, 0.2) !important;
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+}
+
+/* Link renkleri */
+a {
+    color: var(--primary-accent) !important;
+}
+
+a:hover {
+    color: var(--secondary-accent) !important;
+}
+
+/* Butonlar için hover efekti */
+.btn-primary:hover {
+    background-color: var(--secondary-accent) !important;
+    border-color: var(--secondary-accent) !important;
+}
+
+/* Input placeholder rengi */
+::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 0.7;
+}
+
+/* Scrollbar özelleştirmesi */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--primary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--content-bg);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--card-border);
 } 

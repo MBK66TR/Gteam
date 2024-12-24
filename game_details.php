@@ -32,13 +32,46 @@ try {
 } catch(PDOException $e) {
     $error = 'Oyun bilgileri yüklenirken bir hata oluştu.';
 }
+
+// Yorum ekleme işlemi
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment'])) {
+    $comment = trim($_POST['comment']);
+    $rating = (int)$_POST['rating'];
+    
+    if (empty($comment) || $rating < 1 || $rating > 5) {
+        $error = 'Lütfen geçerli bir yorum ve değerlendirme puanı girin.';
+    } else {
+        try {
+            $stmt = $db->prepare("INSERT INTO comments (game_id, user_id, comment, rating) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$game_id, $_SESSION['user_id'], $comment, $rating]);
+            $success = 'Yorumunuz başarıyla eklendi.';
+        } catch(PDOException $e) {
+            $error = 'Yorum eklenirken bir hata oluştu.';
+        }
+    }
+}
+
+// Yorumları getir
+try {
+    $stmt = $db->prepare("
+        SELECT c.*, u.username 
+        FROM comments c 
+        JOIN users u ON c.user_id = u.id 
+        WHERE c.game_id = ? 
+        ORDER BY c.created_at DESC
+    ");
+    $stmt->execute([$game_id]);
+    $comments = $stmt->fetchAll();
+} catch(PDOException $e) {
+    $error = 'Yorumlar yüklenirken bir hata oluştu.';
+}
 ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($game['name']); ?> - GameStore</title>
+    <title><?php echo htmlspecialchars($game['name']); ?> - GameVault</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -49,10 +82,10 @@ try {
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="index.php">GameStore</a>
+            <a class="navbar-brand" href="index.php">GameVault</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -146,9 +179,74 @@ try {
                 </div>
             </div>
         </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="text-primary mb-4"><?php echo number_format($game['price'], 2); ?> TL</h3>
+                <div class="d-grid gap-2">
+                    <a href="https://store.steampowered.com/search/?term=<?php echo urlencode($game['name']); ?>" 
+                       target="_blank" class="btn btn-success btn-lg">
+                        <i class="fas fa-shopping-cart me-2"></i>Satın Al
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yorum Formu -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>Yorum Yap</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Puanınız</label>
+                        <select class="form-select" id="rating" name="rating" required>
+                            <option value="">Puan Seçin</option>
+                            <option value="5">5 - Mükemmel</option>
+                            <option value="4">4 - Çok İyi</option>
+                            <option value="3">3 - İyi</option>
+                            <option value="2">2 - Orta</option>
+                            <option value="1">1 - Kötü</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Yorumunuz</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Yorum Yap</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Yorumlar Listesi -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>Yorumlar</h3>
+            </div>
+            <div class="card-body">
+                <?php foreach ($comments as $comment): ?>
+                <div class="comment mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0"><?php echo htmlspecialchars($comment['username']); ?></h5>
+                        <div class="rating text-warning">
+                            <?php for($i = 0; $i < $comment['rating']; $i++): ?>
+                                <i class="fas fa-star"></i>
+                            <?php endfor; ?>
+                        </div>
+                    </div>
+                    <p class="mb-1"><?php echo nl2br(htmlspecialchars($comment['comment'])); ?></p>
+                    <small class="text-muted">
+                        <?php echo date('d.m.Y H:i', strtotime($comment['created_at'])); ?>
+                    </small>
+                    <hr>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
         <?php endif; ?>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <?php include 'includes/footer.php'; ?>
 </body>
 </html> 

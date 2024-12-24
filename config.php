@@ -54,6 +54,18 @@ class Database {
             // Geçici tabloyu yeni isimle yeniden adlandır
             $this->db->exec("ALTER TABLE games_temp RENAME TO games");
             
+            // Yorumlar tablosu
+            $this->db->exec("CREATE TABLE IF NOT EXISTS comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                game_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                comment TEXT NOT NULL,
+                rating INTEGER CHECK(rating BETWEEN 1 AND 5),
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )");
+            
             echo "Veritabanı tabloları başarıyla güncellendi!";
             
         } catch(PDOException $e) {
