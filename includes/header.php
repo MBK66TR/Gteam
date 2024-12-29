@@ -29,6 +29,11 @@
                         <a class="nav-link <?php echo $active_page == 'admin' ? 'active' : ''; ?>" href="admin_panel.php">Admin Paneli</a>
                     </li>
                     <?php endif; ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo $active_page == 'community' ? 'active' : ''; ?>" href="community.php">
+                            <i class="fas fa-users me-1"></i>Topluluk
+                        </a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav">
                     <li class="nav-item">

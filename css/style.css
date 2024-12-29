@@ -430,4 +430,28 @@ a:hover {
 .form-select option {
     background-color: var(--content-bg);
     color: var(--text-color);
+}
+
+/* Topluluk sayfası stilleri */
+.post-card {
+    transition: transform 0.2s;
+}
+
+.post-card:hover {
+    transform: translateY(-2px);
+}
+
+.like-btn {
+    transition: all 0.2s;
+}
+
+.like-btn:hover {
+    background-color: var(--primary-accent);
+    color: var(--text-hover);
+}
+
+.like-btn.liked {
+    background-color: var(--primary-accent);
+    color: var(--text-hover);
+    border-color: var(--primary-accent);
 } 

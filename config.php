@@ -45,6 +45,16 @@ class Database {
                 FOREIGN KEY (added_by) REFERENCES users(id)
             )");
 
+
+
+
+
+
+
+
+
+
+
             // Mevcut verileri geçici tabloya kopyala
             $this->db->exec("INSERT OR IGNORE INTO games_temp SELECT * FROM games");
             
@@ -63,6 +73,28 @@ class Database {
                 rating INTEGER CHECK(rating BETWEEN 1 AND 5),
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (game_id) REFERENCES games(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )");
+            
+            // Forum gönderileri tablosu
+            $this->db->exec("CREATE TABLE IF NOT EXISTS forum_posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                likes INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )");
+            
+            // Forum yorumları tablosu
+            $this->db->exec("CREATE TABLE IF NOT EXISTS forum_comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                comment TEXT NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (post_id) REFERENCES forum_posts(id) ON DELETE CASCADE,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
             )");
             
