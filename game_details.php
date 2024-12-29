@@ -74,6 +74,7 @@ try {
     <title><?php echo htmlspecialchars($game['name']); ?> - GameVault</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
     <style>
         .game-image {
             max-height: 400px;
