@@ -84,40 +84,8 @@ try {
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">GameVault</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Ana Sayfa</a>
-                    </li>
-                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="add_game.php">Oyun Ekle</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="admin_panel.php">Admin Paneli</a>
-                    </li>
-                    <?php endif; ?>
-                </ul>
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile.php">
-                            <i class="fas fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Çıkış Yap</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+    <?php include 'includes/header.php'; // Header'ı ekliyoruz ?>
+    
     <div class="container mt-4">
         <?php if ($error): ?>
             <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
@@ -248,6 +216,6 @@ try {
         <?php endif; ?>
     </div>
 
-    <?php include 'includes/footer.php'; ?>
+    <?php include 'includes/footer.php'; // Footer'ı ekliyoruz ?>
 </body>
 </html> 

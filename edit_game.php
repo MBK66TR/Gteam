@@ -38,11 +38,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $price = floatval($_POST['price'] ?? 0);
     $publisher = trim($_POST['publisher'] ?? '');
     $release_date = trim($_POST['release_date'] ?? '');
+    $image = $_FILES['image']['name'] ?? '';
 
     if (empty($name) || empty($genre) || empty($description) || $price <= 0 || empty($publisher)) {
         $error = 'Lütfen tüm alanları doldurunuz ve geçerli bir fiyat giriniz.';
     } else {
         try {
+            if (!empty($image)) {
+                $target_dir = "uploads/";
+                $target_file = $target_dir . basename($image);
+                move_uploaded_file($_FILES['image']['tmp_name'], $target_file);
+                
+                $stmt = $db->prepare("UPDATE games SET image_url = ? WHERE id = ?");
+                $stmt->execute([$target_file, $game_id]);
+            }
+
             $stmt = $db->prepare("UPDATE games SET name = ?, genre = ?, description = ?, price = ?, publisher = ?, release_date = ? WHERE id = ?");
             $stmt->execute([$name, $genre, $description, $price, $publisher, $release_date, $game_id]);
             $success = 'Oyun başarıyla güncellendi.';
@@ -116,7 +126,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <?php endif; ?>
 
                         <?php if ($game): ?>
-                        <form method="POST" action="">
+                        <form method="POST" action="" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Görsel Yükle</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                            </div>
                             <div class="mb-3">
                                 <label for="name" class="form-label">Oyun Adı</label>
                                 <input type="text" class="form-control" id="name" name="name" 

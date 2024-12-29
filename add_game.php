@@ -13,14 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $price = $_POST['price'] ?? '';
     $publisher = $_POST['publisher'] ?? '';
     $release_date = $_POST['release_date'] ?? '';
+    $image = $_FILES['image']['name'] ?? '';
 
     if (empty($name) || empty($genre) || empty($description) || empty($price) || empty($publisher) || empty($release_date)) {
         $error = 'Tüm alanları doldurunuz.';
     } else {
         try {
             $db = Database::getInstance()->getConnection();
-            $stmt = $db->prepare("INSERT INTO games (name, genre, description, price, publisher, release_date, added_by) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$name, $genre, $description, $price, $publisher, $release_date, $_SESSION['user_id']]);
+            if (!empty($image)) {
+                $target_dir = "uploads/";
+                $target_file = $target_dir . basename($image);
+                move_uploaded_file($_FILES['image']['tmp_name'], $target_file);
+            }
+            $stmt = $db->prepare("INSERT INTO games (name, genre, description, price, publisher, release_date, image_url, added_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $genre, $description, $price, $publisher, $release_date, $target_file, $_SESSION['user_id']]);
             $success = 'Oyun başarıyla eklendi.';
         } catch(PDOException $e) {
             $error = 'Oyun eklenirken bir hata oluştu.';
@@ -49,7 +55,7 @@ include 'includes/header.php';
                         <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
                     <?php endif; ?>
 
-                    <form method="POST" action="">
+                    <form method="POST" action="" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="name" class="form-label">Oyun Adı</label>
                             <input type="text" class="form-control" id="name" name="name" required>
@@ -78,6 +84,11 @@ include 'includes/header.php';
                         <div class="mb-3">
                             <label for="release_date" class="form-label">Çıkış Tarihi</label>
                             <input type="date" class="form-control" id="release_date" name="release_date" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Görsel Yükle</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
                         </div>
                         
                         <button type="submit" class="btn btn-primary">Oyun Ekle</button>
