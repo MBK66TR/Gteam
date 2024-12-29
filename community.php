@@ -24,11 +24,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_content'])) {
     }
 }
 
+// Beğeni ekleme işlemi
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['like_post_id'])) {
+    $like_post_id = (int)$_POST['like_post_id'];
+    
+    try {
+        $stmt = $db->prepare("INSERT INTO post_likes (post_id, user_id) VALUES (?, ?)");
+        $stmt->execute([$like_post_id, $_SESSION['user_id']]);
+        $success = 'Gönderi beğenildi.';
+    } catch(PDOException $e) {
+        $error = 'Beğeni eklenirken bir hata oluştu.';
+    }
+}
+
 // Gönderileri getir
 try {
     $stmt = $db->prepare("
         SELECT fp.*, u.username, 
-        (SELECT COUNT(*) FROM forum_comments WHERE post_id = fp.id) as comment_count
+        (SELECT COUNT(*) FROM forum_comments WHERE post_id = fp.id) as comment_count,
+        (SELECT COUNT(*) FROM post_likes WHERE post_id = fp.id) as like_count
         FROM forum_posts fp 
         JOIN users u ON fp.user_id = u.id 
         ORDER BY fp.created_at DESC
@@ -113,6 +127,12 @@ include 'includes/header.php';
                                 Yorumlar (<?php echo $post['comment_count']; ?>)
                             </button>
                         </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary like-btn" data-post-id="<?php echo $post['id']; ?>">
+                                <i class="fas fa-heart me-1"></i>
+                                <span class="like-count"><?php echo $post['like_count']; ?></span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -155,6 +175,29 @@ include 'includes/header.php';
             } else {
                 commentsDiv.style.display = 'none';
             }
+        });
+    });
+
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.getAttribute('data-post-id');
+            const likeCountSpan = this.querySelector('.like-count');
+
+            // AJAX isteği ile beğeni ekle
+            fetch('community.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'like_post_id=' + postId
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Beğeni sayısını güncelle
+                let currentCount = parseInt(likeCountSpan.textContent);
+                likeCountSpan.textContent = currentCount + 1;
+            })
+            .catch(error => console.error('Hata:', error));
         });
     });
 </script>
