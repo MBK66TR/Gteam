@@ -72,10 +72,10 @@ include 'includes/header.php';
                 <div class="col-md-3">
                     <select class="form-select" name="price_range">
                         <option value="">Fiyat Aralığı</option>
-                        <option value="0-50" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '0-50') ? 'selected' : ''; ?>>0-50 TL</option>
-                        <option value="50-100" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '50-100') ? 'selected' : ''; ?>>50-100 TL</option>
-                        <option value="100-200" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '100-200') ? 'selected' : ''; ?>>100-200 TL</option>
-                        <option value="200+" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '200+') ? 'selected' : ''; ?>>200+ TL</option>
+                        <option value="0-50" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '0-50') ? 'selected' : ''; ?>>0-50 $</option>
+                        <option value="50-100" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '50-100') ? 'selected' : ''; ?>>50-100 $</option>
+                        <option value="100-200" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '100-200') ? 'selected' : ''; ?>>100-200 $</option>
+                        <option value="200+" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '200+') ? 'selected' : ''; ?>>200+ $</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -107,10 +107,10 @@ include 'includes/header.php';
                     <p class="card-text">
                         <strong>Tür:</strong> <?php echo htmlspecialchars($game['genre']); ?><br>
                         <strong>Yayımcı:</strong> <?php echo htmlspecialchars($game['publisher']); ?><br>
-                        <strong>Fiyat:</strong> <?php echo number_format($game['price'], 2); ?> TL
+                        <strong>Fiyat:</strong> <?php echo number_format($game['price'], 2); ?> $
                     </p>
                     <div class="price-tag">
-                        <?php echo number_format($game['price'], 2); ?> TL
+                        <?php echo number_format($game['price'], 2); ?> $
                     </div>
                     <a href="game_details.php?id=<?php echo $game['id']; ?>" class="btn btn-primary btn-sm">Detayları Gör</a>
                 </div>
@@ -127,4 +127,4 @@ include 'includes/header.php';
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?> 
+<?php include 'includes/footer.php'; // Footer'ı ekliyoruz ?> 

@@ -120,7 +120,7 @@ try {
                             <strong>Ekleyen:</strong> 
                             <?php echo htmlspecialchars($game['publisher_name']); ?>
                         </p>
-                        <h3 class="text-primary mb-4"><?php echo number_format($game['price'], 2); ?> TL</h3>
+                        <h3 class="text-primary mb-4"><?php echo number_format($game['price'], 2); ?> $</h3>
                         
                         <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
                         <div class="d-grid gap-2">
@@ -151,7 +151,7 @@ try {
 
         <div class="card mb-4">
             <div class="card-body">
-                <h3 class="text-primary mb-4"><?php echo number_format($game['price'], 2); ?> TL</h3>
+                <h3 class="text-primary mb-4"><?php echo number_format($game['price'], 2); ?> $</h3>
                 <div class="d-grid gap-2">
                     <a href="https://store.steampowered.com/search/?term=<?php echo urlencode($game['name']); ?>" 
                        target="_blank" class="btn btn-success btn-lg">
