@@ -109,7 +109,6 @@ class Database {
                 UNIQUE(post_id, user_id)  -- Aynı kullanıcının aynı postu birden fazla beğenmesini engelle
             )");
             
-            echo "Veritabanı tabloları başarıyla güncellendi!";
             
         } catch(PDOException $e) {
             die("Veritabanı Hatası: " . $e->getMessage() . " (Kod: " . $e->getCode() . ")");

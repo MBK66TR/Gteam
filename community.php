@@ -6,6 +6,12 @@ $db = Database::getInstance()->getConnection();
 $error = '';
 $success = '';
 
+// Gönderi arama işlemi
+$search_query = '';
+if (isset($_GET['search'])) {
+    $search_query = trim($_GET['search']);
+}
+
 // Yeni gönderi ekleme
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['post_content'])) {
     $title = trim($_POST['post_title']);
@@ -45,9 +51,10 @@ try {
         (SELECT COUNT(*) FROM post_likes WHERE post_id = fp.id) as like_count
         FROM forum_posts fp 
         JOIN users u ON fp.user_id = u.id 
+        WHERE fp.title LIKE ? 
         ORDER BY fp.created_at DESC
     ");
-    $stmt->execute();
+    $stmt->execute(['%' . $search_query . '%']);
     $posts = $stmt->fetchAll();
 } catch(PDOException $e) {
     $error = 'Gönderiler yüklenirken bir hata oluştu.';
@@ -85,6 +92,14 @@ include 'includes/header.php';
             <?php if ($success): ?>
                 <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
             <?php endif; ?>
+
+            <!-- Gönderi Arama Formu -->
+            <form method="GET" action="" class="mb-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="search" placeholder="Gönderi başlığı ara..." value="<?php echo htmlspecialchars($search_query); ?>">
+                    <button class="btn btn-primary" type="submit">Ara</button>
+                </div>
+            </form>
 
             <!-- Yeni Gönderi Formu -->
             <div class="card mb-4">
