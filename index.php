@@ -71,7 +71,7 @@ include 'includes/header.php';
                 </div>
                 <div class="col-md-3">
                     <select class="form-select" name="price_range">
-                        <option value="">Fiyat Aralığı</option>
+                        <option value="">Tüm Fiyat Aralıkları</option>
                         <option value="0-50" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '0-50') ? 'selected' : ''; ?>>0-50 $</option>
                         <option value="50-100" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '50-100') ? 'selected' : ''; ?>>50-100 $</option>
                         <option value="100-200" <?php echo (isset($_GET['price_range']) && $_GET['price_range'] == '100-200') ? 'selected' : ''; ?>>100-200 $</option>
