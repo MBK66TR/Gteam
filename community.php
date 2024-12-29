@@ -39,6 +39,24 @@ try {
     $error = 'Gönderiler yüklenirken bir hata oluştu.';
 }
 
+// Yorum ekleme işlemi
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comment_content']) && isset($_POST['post_id'])) {
+    $comment_content = trim($_POST['comment_content']);
+    $post_id = (int)$_POST['post_id'];
+    
+    if (empty($comment_content)) {
+        $error = 'Lütfen yorumunuzu giriniz.';
+    } else {
+        try {
+            $stmt = $db->prepare("INSERT INTO forum_comments (post_id, user_id, comment) VALUES (?, ?, ?)");
+            $stmt->execute([$post_id, $_SESSION['user_id'], $comment_content]);
+            $success = 'Yorumunuz başarıyla eklendi.';
+        } catch(PDOException $e) {
+            $error = 'Yorum eklenirken bir hata oluştu.';
+        }
+    }
+}
+
 $page_title = 'Topluluk';
 $active_page = 'community';
 include 'includes/header.php';
@@ -91,23 +109,54 @@ include 'includes/header.php';
                     <p class="card-text"><?php echo nl2br(htmlspecialchars($post['content'])); ?></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <a href="post_details.php?id=<?php echo $post['id']; ?>" class="btn btn-sm btn-primary">
-                                <i class="fas fa-comments me-1"></i>
+                            <button class="btn btn-sm btn-primary comment-toggle" data-post-id="<?php echo $post['id']; ?>">
                                 Yorumlar (<?php echo $post['comment_count']; ?>)
-                            </a>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary like-btn" data-post-id="<?php echo $post['id']; ?>">
-                                <i class="fas fa-heart me-1"></i>
-                                <span class="like-count"><?php echo $post['likes']; ?></span>
                             </button>
                         </div>
                     </div>
+                </div>
+
+                <!-- Yorumlar -->
+                <div class="comments" id="comments-<?php echo $post['id']; ?>" style="display: none;">
+                    <h6>Yorumlar</h6>
+                    <?php
+                    $stmt = $db->prepare("SELECT c.*, u.username FROM forum_comments c JOIN users u ON c.user_id = u.id WHERE c.post_id = ? ORDER BY c.created_at ASC");
+                    $stmt->execute([$post['id']]);
+                    $comments = $stmt->fetchAll();
+                    foreach ($comments as $comment): ?>
+                        <div class="comment mb-2">
+                            <strong><?php echo htmlspecialchars($comment['username']); ?>:</strong>
+                            <p><?php echo nl2br(htmlspecialchars($comment['comment'])); ?></p>
+                        </div>
+                    <?php endforeach; ?>
+                    
+                    <!-- Yorum Ekleme Formu -->
+                    <form method="POST" action="">
+                        <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                        <div class="mb-3">
+                            <textarea class="form-control" name="comment_content" rows="2" placeholder="Yorumunuzu yazın..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-sm">Yorum Yap</button>
+                    </form>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.comment-toggle').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.getAttribute('data-post-id');
+            const commentsDiv = document.getElementById('comments-' + postId);
+            if (commentsDiv.style.display === 'none') {
+                commentsDiv.style.display = 'block';
+            } else {
+                commentsDiv.style.display = 'none';
+            }
+        });
+    });
+</script>
 
 <?php include 'includes/footer.php'; ?> 
