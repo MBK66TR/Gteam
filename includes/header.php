@@ -29,10 +29,24 @@
                         <a class="nav-link <?php echo $active_page == 'admin' ? 'active' : ''; ?>" href="admin_panel.php">Admin Paneli</a>
                     </li>
                     <?php endif; ?>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $active_page == 'community' ? 'active' : ''; ?>" href="community.php">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle <?php echo $active_page == 'community' ? 'active' : ''; ?>" 
+                           href="#" id="communityDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-users me-1"></i>Topluluk
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="communityDropdown">
+                            <li>
+                                <a class="dropdown-item" href="community.php">
+                                    <i class="fas fa-comments me-2"></i>Forum
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="profiles.php">
+                                    <i class="fas fa-user-friends me-2"></i>Profiller
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
                 <ul class="navbar-nav">

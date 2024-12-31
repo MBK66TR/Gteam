@@ -109,7 +109,27 @@ class Database {
                 UNIQUE(post_id, user_id)  -- Aynı kullanıcının aynı postu birden fazla beğenmesini engelle
             )");
             
-            
+            // Users tablosunu oluştur
+            $this->db->exec("CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                email TEXT NOT NULL UNIQUE,
+                password TEXT NOT NULL,
+                is_admin INTEGER DEFAULT 0,
+                profile_image TEXT DEFAULT 'default.jpg',
+                bio TEXT,
+                favorite_game TEXT,
+                steam_profile TEXT,
+                join_date DATETIME DEFAULT CURRENT_TIMESTAMP
+            )");
+
+            // Uploads klasörünü ve varsayılan profil resmini oluştur
+            if (!file_exists('uploads/profiles')) {
+                mkdir('uploads/profiles', 0777, true);
+                // Varsayılan profil resmini kopyala
+                copy('assets/default_profile.jpg', 'uploads/profiles/default.jpg');
+            }
+
         } catch(PDOException $e) {
             die("Veritabanı Hatası: " . $e->getMessage() . " (Kod: " . $e->getCode() . ")");
         }
@@ -132,3 +152,6 @@ function checkAdmin() {
     }
 }
 ?> 
+
+
+

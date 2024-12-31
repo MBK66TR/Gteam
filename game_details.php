@@ -118,7 +118,9 @@ try {
                         <?php endif; ?>
                         <p class="text-muted">
                             <strong>Ekleyen:</strong> 
-                            <?php echo htmlspecialchars($game['publisher_name']); ?>
+                            <a href="view_profile.php?id=<?php echo $game['added_by']; ?>">
+                                <?php echo htmlspecialchars($game['publisher_name']); ?>
+                            </a>
                         </p>
                         <h3 class="text-primary mb-4"><?php echo number_format($game['price'], 2); ?> $</h3>
                         
@@ -197,7 +199,11 @@ try {
                 <?php foreach ($comments as $comment): ?>
                 <div class="comment mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="mb-0"><?php echo htmlspecialchars($comment['username']); ?></h5>
+                        <h5 class="mb-0">
+                            <a href="view_profile.php?id=<?php echo $comment['user_id']; ?>">
+                                <?php echo htmlspecialchars($comment['username']); ?>
+                            </a>
+                        </h5>
                         <div class="rating text-warning">
                             <?php for($i = 0; $i < $comment['rating']; $i++): ?>
                                 <i class="fas fa-star"></i>

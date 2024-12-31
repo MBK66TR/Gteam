@@ -8,7 +8,7 @@ $error = '';
 $success = '';
 
 try {
-    $stmt = $db->prepare("SELECT id, username, email FROM users WHERE id = ?");
+    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 } catch(PDOException $e) {
@@ -16,32 +16,56 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $current_password = $_POST['current_password'] ?? '';
-    $new_password = $_POST['new_password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
-
-    if (empty($current_password)) {
-        $error = 'Mevcut şifrenizi giriniz.';
-    } elseif (empty($new_password)) {
-        $error = 'Yeni şifrenizi giriniz.';
-    } elseif ($new_password !== $confirm_password) {
-        $error = 'Yeni şifreler eşleşmiyor.';
-    } else {
+    if (isset($_POST['update_profile'])) {
+        $bio = trim($_POST['bio'] ?? '');
+        $favorite_game = trim($_POST['favorite_game'] ?? '');
+        $steam_profile = trim($_POST['steam_profile'] ?? '');
+        
         try {
-            $stmt = $db->prepare("SELECT password FROM users WHERE id = ?");
-            $stmt->execute([$_SESSION['user_id']]);
-            $user_data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (password_verify($current_password, $user_data['password'])) {
-                $new_password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-                $stmt = $db->prepare("UPDATE users SET password = ? WHERE id = ?");
-                $stmt->execute([$new_password_hash, $_SESSION['user_id']]);
-                $success = 'Şifreniz başarıyla güncellendi.';
+            // Resim yükleme işlemi
+            if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
+                $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+                $filename = $_FILES['profile_image']['name'];
+                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                
+                if (!in_array($ext, $allowed)) {
+                    throw new Exception('Geçersiz dosya formatı. Sadece JPG, PNG ve WEBP formatları kabul edilir.');
+                }
+                
+                if ($_FILES['profile_image']['size'] > 5000000) { // 5MB limit
+                    throw new Exception('Dosya boyutu çok büyük. Maximum 5MB yükleyebilirsiniz.');
+                }
+                
+                $new_filename = uniqid('profile_') . '.' . $ext;
+                $upload_path = 'uploads/profiles/' . $new_filename;
+                
+                if (!move_uploaded_file($_FILES['profile_image']['tmp_name'], $upload_path)) {
+                    throw new Exception('Dosya yüklenirken bir hata oluştu.');
+                }
+                
+                // Eski profil resmini sil (default.jpg değilse)
+                if ($user['profile_image'] != 'default.jpg' && file_exists($user['profile_image'])) {
+                    unlink($user['profile_image']);
+                }
+                
+                // Veritabanını güncelle
+                $stmt = $db->prepare("UPDATE users SET profile_image = ?, bio = ?, favorite_game = ?, steam_profile = ? WHERE id = ?");
+                $stmt->execute([$upload_path, $bio, $favorite_game, $steam_profile, $_SESSION['user_id']]);
             } else {
-                $error = 'Mevcut şifreniz yanlış.';
+                // Sadece diğer bilgileri güncelle
+                $stmt = $db->prepare("UPDATE users SET bio = ?, favorite_game = ?, steam_profile = ? WHERE id = ?");
+                $stmt->execute([$bio, $favorite_game, $steam_profile, $_SESSION['user_id']]);
             }
-        } catch(PDOException $e) {
-            $error = 'Şifre güncellenirken bir hata oluştu.';
+            
+            $success = 'Profil bilgileri başarıyla güncellendi.';
+            
+            // Güncel bilgileri yeniden yükle
+            $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+            $stmt->execute([$_SESSION['user_id']]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            $error = $e->getMessage();
         }
     }
 }
@@ -52,11 +76,45 @@ include 'includes/header.php';
 ?>
 
 <div class="container mt-4">
-    <div class="row justify-content-center">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- Profil Kartı -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="<?php echo htmlspecialchars($user['profile_image'] ?? 'default.jpg'); ?>" 
+                         class="rounded-circle mb-3" 
+                         style="width: 150px; height: 150px; object-fit: cover;">
+                    <h3><?php echo htmlspecialchars($user['username']); ?></h3>
+                    <p class="text-muted">Üyelik: <?php echo date('d.m.Y', strtotime($user['join_date'])); ?></p>
+                    
+                    <?php if ($user['bio']): ?>
+                        <div class="mb-3">
+                            <h5>Hakkında</h5>
+                            <p><?php echo nl2br(htmlspecialchars($user['bio'])); ?></p>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($user['favorite_game']): ?>
+                        <div class="mb-3">
+                            <h5>Favori Oyun</h5>
+                            <p><?php echo htmlspecialchars($user['favorite_game']); ?></p>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($user['steam_profile']): ?>
+                        <a href="<?php echo htmlspecialchars($user['steam_profile']); ?>" 
+                           class="btn btn-primary" target="_blank">
+                            <i class="fab fa-steam"></i> Steam Profili
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="mb-0">Profil Bilgileri</h3>
+                    <h4>Profil Bilgilerini Düzenle</h4>
                 </div>
                 <div class="card-body">
                     <?php if ($error): ?>
@@ -67,35 +125,43 @@ include 'includes/header.php';
                         <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
                     <?php endif; ?>
 
-                    <?php if ($user): ?>
-                    <div class="mb-4">
-                        <h4>Hesap Bilgileri</h4>
-                        <p><strong>Kullanıcı Adı:</strong> <?php echo htmlspecialchars($user['username']); ?></p>
-                        <p><strong>E-posta:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
-                    </div>
+                    <form method="POST" action="" enctype="multipart/form-data">
+                        <input type="hidden" name="update_profile" value="1">
+                        
+                        <div class="mb-3">
+                            <label for="profile_image" class="form-label">Profil Fotoğrafı</label>
+                            <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
+                            <small class="text-muted">PNG, JPG veya WEBP formatında bir resim seçin.</small>
+                        </div>
 
-                    <div class="mt-4">
-                        <h4>Şifre Değiştir</h4>
-                        <form method="POST" action="">
-                            <div class="mb-3">
-                                <label for="current_password" class="form-label">Mevcut Şifre</label>
-                                <input type="password" class="form-control" id="current_password" name="current_password" required>
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Hakkımda</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="4" 
+                                    placeholder="Kendinizden bahsedin..."><?php echo htmlspecialchars($user['bio'] ?? ''); ?></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="favorite_game" class="form-label">Favori Oyun</label>
+                            <input type="text" class="form-control" id="favorite_game" name="favorite_game"
+                                   placeholder="En sevdiğiniz oyun..."
+                                   value="<?php echo htmlspecialchars($user['favorite_game'] ?? ''); ?>">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="steam_profile" class="form-label">Steam Profil Linki</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fab fa-steam"></i></span>
+                                <input type="url" class="form-control" id="steam_profile" name="steam_profile"
+                                       placeholder="https://steamcommunity.com/id/kullaniciadi"
+                                       value="<?php echo htmlspecialchars($user['steam_profile'] ?? ''); ?>">
                             </div>
-                            
-                            <div class="mb-3">
-                                <label for="new_password" class="form-label">Yeni Şifre</label>
-                                <input type="password" class="form-control" id="new_password" name="new_password" required>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="confirm_password" class="form-label">Yeni Şifre Tekrar</label>
-                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Şifreyi Güncelle</button>
-                        </form>
-                    </div>
-                    <?php endif; ?>
+                            <small class="text-muted">Steam profil linkinizi ekleyin.</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
