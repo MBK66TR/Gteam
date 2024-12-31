@@ -116,7 +116,7 @@ class Database {
                 email TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL,
                 is_admin INTEGER DEFAULT 0,
-                profile_image TEXT DEFAULT 'default.jpg',
+                profile_image TEXT DEFAULT 'uploads/profiles/default.jpg',
                 bio TEXT,
                 favorite_game TEXT,
                 steam_profile TEXT,

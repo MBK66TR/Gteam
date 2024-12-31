@@ -8,6 +8,36 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <?php if (isset($extra_css)) echo $extra_css; ?>
+    <style>
+        /* Dropdown menü stilleri */
+        .dropdown-menu {
+            background-color: #212529; /* Koyu arka plan */
+            border: 1px solid #373b3e;
+        }
+
+        .dropdown-item {
+            color: #fff; /* Beyaz yazı */
+            padding: 0.5rem 1rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #373b3e; /* Hover durumunda koyu gri */
+            color: #fff;
+        }
+
+        .dropdown-item i {
+            width: 20px; /* İkonlar için sabit genişlik */
+            text-align: center;
+            margin-right: 8px;
+        }
+
+        /* Aktif menü öğesi */
+        .dropdown-item.active, 
+        .dropdown-item:active {
+            background-color: #0d6efd; /* Bootstrap primary rengi */
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">

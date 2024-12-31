@@ -170,7 +170,7 @@ if (isset($_POST['delete_user']) && isset($_POST['user_id'])) {
                 <div class="card bg-warning text-dark">
                     <div class="card-body">
                         <h5 class="card-title">Toplam Değer</h5>
-                        <h2><?php echo number_format($stats['total_value'], 2); ?> TL</h2>
+                        <h2><?php echo number_format($stats['total_value'], 2); ?> $</h2>
                     </div>
                 </div>
             </div>

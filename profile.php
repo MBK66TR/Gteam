@@ -36,10 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     throw new Exception('Dosya boyutu çok büyük. Maximum 5MB yükleyebilirsiniz.');
                 }
                 
+                $upload_dir = __DIR__ . '/uploads/profiles/';
                 $new_filename = uniqid('profile_') . '.' . $ext;
-                $upload_path = 'uploads/profiles/' . $new_filename;
+                $upload_path = $upload_dir . $new_filename;
+                $db_path = 'uploads/profiles/' . $new_filename;
                 
                 if (!move_uploaded_file($_FILES['profile_image']['tmp_name'], $upload_path)) {
+                    error_log('Dosya yükleme hatası: ' . error_get_last()['message']);
                     throw new Exception('Dosya yüklenirken bir hata oluştu.');
                 }
                 
@@ -50,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 
                 // Veritabanını güncelle
                 $stmt = $db->prepare("UPDATE users SET profile_image = ?, bio = ?, favorite_game = ?, steam_profile = ? WHERE id = ?");
-                $stmt->execute([$upload_path, $bio, $favorite_game, $steam_profile, $_SESSION['user_id']]);
+                $stmt->execute([$db_path, $bio, $favorite_game, $steam_profile, $_SESSION['user_id']]);
             } else {
                 // Sadece diğer bilgileri güncelle
                 $stmt = $db->prepare("UPDATE users SET bio = ?, favorite_game = ?, steam_profile = ? WHERE id = ?");
@@ -81,7 +84,10 @@ include 'includes/header.php';
             <!-- Profil Kartı -->
             <div class="card mb-4">
                 <div class="card-body text-center">
-                    <img src="<?php echo htmlspecialchars($user['profile_image'] ?? 'default.jpg'); ?>" 
+                    <img src="<?php 
+                        $profile_image = !empty($user['profile_image']) ? $user['profile_image'] : 'uploads/profiles/default.jpg';
+                        echo htmlspecialchars($profile_image); 
+                    ?>" 
                          class="rounded-circle mb-3" 
                          style="width: 150px; height: 150px; object-fit: cover;">
                     <h3><?php echo htmlspecialchars($user['username']); ?></h3>
